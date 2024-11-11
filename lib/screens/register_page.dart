@@ -11,9 +11,11 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   final _nameController = TextEditingController();
   final _mobileController = TextEditingController();
 
@@ -21,6 +23,7 @@ class _RegisterPageState extends State<RegisterPage> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     _nameController.dispose();
     _mobileController.dispose();
     super.dispose();
@@ -60,16 +63,23 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                     ),
                     SizedBox(height: 25),
-                    _buildTextField(
-                        'Name', 'John Doe', TextInputType.name, _nameController),
+                    _buildTextField('Name', 'John Doe', TextInputType.name, _nameController),
                     SizedBox(height: 25),
-                    _buildTextField('Mobile Number', '8129*****',
-                        TextInputType.phone, _mobileController),
+                    _buildTextField('Mobile Number', '8129*****', TextInputType.phone, _mobileController),
                     SizedBox(height: 25),
-                    _buildTextField('Email', 'example@email.com',
-                        TextInputType.emailAddress, _emailController),
+                    _buildTextField('Email', 'example@email.com', TextInputType.emailAddress, _emailController),
                     SizedBox(height: 25),
-                    _buildPasswordField('Password', _passwordController),
+                    _buildPasswordField('Password', _passwordController, _isPasswordVisible, (value) {
+                      setState(() {
+                        _isPasswordVisible = value;
+                      });
+                    }),
+                    SizedBox(height: 25),
+                    _buildPasswordField('Confirm Password', _confirmPasswordController, _isConfirmPasswordVisible, (value) {
+                      setState(() {
+                        _isConfirmPasswordVisible = value;
+                      });
+                    }),
                     SizedBox(height: 30),
                     Align(
                       alignment: Alignment.centerRight,
@@ -129,8 +139,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  Widget _buildTextField(String label, String hint, TextInputType keyboardType,
-      TextEditingController controller) {
+  Widget _buildTextField(String label, String hint, TextInputType keyboardType, TextEditingController controller) {
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
@@ -147,20 +156,18 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  Widget _buildPasswordField(String label, TextEditingController controller) {
+  Widget _buildPasswordField(String label, TextEditingController controller, bool isPasswordVisible, Function(bool) toggleVisibility) {
     return TextFormField(
       controller: controller,
-      obscureText: !_isPasswordVisible,
+      obscureText: !isPasswordVisible,
       decoration: InputDecoration(
         labelText: label,
         suffixIcon: IconButton(
           icon: Icon(
-            _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+            isPasswordVisible ? Icons.visibility : Icons.visibility_off,
           ),
           onPressed: () {
-            setState(() {
-              _isPasswordVisible = !_isPasswordVisible;
-            });
+            toggleVisibility(!isPasswordVisible);
           },
         ),
       ),
@@ -170,6 +177,9 @@ class _RegisterPageState extends State<RegisterPage> {
         }
         if (value.length < 6) {
           return 'Password must be at least 6 characters long';
+        }
+        if (label == 'Confirm Password' && value != _passwordController.text) {
+          return 'Passwords do not match';
         }
         return null;
       },
@@ -184,8 +194,7 @@ class _RegisterPageState extends State<RegisterPage> {
     final auth = Authentication();
 
     try {
-      final userCredential = await auth.registerWithEmailAndPassword(
-          email, password);
+      final userCredential = await auth.registerWithEmailAndPassword(email, password);
       if (userCredential != null) {
         // Registration successful - Show a dialog
         showDialog(

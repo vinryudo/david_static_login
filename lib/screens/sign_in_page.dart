@@ -1,7 +1,6 @@
 import 'package:david_static_login/screens/home_page.dart';
 import 'package:david_static_login/services/authenticate.dart';
 import 'package:flutter/material.dart';
-
 import 'register_page.dart'; // Import the RegisterPage
 
 class SignInPage extends StatefulWidget {
@@ -70,10 +69,6 @@ class _SignInPageState extends State<SignInPage> {
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
                               _signInWithEmailAndPassword();
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => HomePage()),
-                              );
                             }
                           },
                           style: ElevatedButton.styleFrom(
@@ -181,13 +176,37 @@ class _SignInPageState extends State<SignInPage> {
     try {
       final userCredential = await auth.signInWithEmailAndPassword(email, password);
       if (userCredential != null) {
+        // Sign-in was successful, navigate to the home page
         print('Sign in successful!');
-        // Navigate to the next screen (e.g., home screen)
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
       } else {
-        print('Sign in failed.');
+        // Sign-in failed, show an error message
+        _showErrorDialog('Sign-in failed. Please check your credentials.');
       }
     } catch (e) {
-      print('An unexpected error occurred: ${e.toString()}');
+      // Handle errors and show error message
+      _showErrorDialog('An unexpected error occurred: ${e.toString()}');
     }
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Error'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+            },
+            child: Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 }
