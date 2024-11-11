@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "990520774550",
+    "project_id": "static-login-a1f58",
+    "storage_bucket": "static-login-a1f58.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:990520774550:android:e081a7d949c6631df657b7",
+        "android_client_info": {
+          "package_name": "com.example.david_static_login"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD8YoQ7sXRjXYvA_uGUi_rILzl63esu99A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
